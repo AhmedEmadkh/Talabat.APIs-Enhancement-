@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.DTOs.Products;
+using Talabat.APIs.Error;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications;
@@ -35,7 +36,7 @@ namespace Talabat.APIs.Controllers
 
 			if(product is null)
 			{
-				return NotFound();
+				return NotFound(new ApiResponse(400));
 			}
 			var ProductToReturn = _mapper.Map<ProductToReturnDTO>(product);
 			return Ok(ProductToReturn);
