@@ -49,6 +49,8 @@ namespace Talabat.APIs
 					return new BadRequestObjectResult(response);
 				};
 			});
+			
+
 
 			#endregion
 
@@ -61,6 +63,7 @@ namespace Talabat.APIs
 			var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR for creating object from DbContext Explicitly
 
 			var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
+
 
 			try
 			{
