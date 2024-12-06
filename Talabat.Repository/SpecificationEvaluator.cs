@@ -26,8 +26,12 @@ namespace Talabat.Repository
                 query = query.OrderByDescending(spec.OrderByDesc);
 
             query = spec.Includes.Aggregate(query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
+
+
+            if(spec.IsPaginationEnabled)
+                query = query.Skip(spec.Skip).Take(spec.Take);
             // query = _dbContext.Set<T>().Where(P => P.Id == 1).Include(P => P.Brand)
-            // query = _dbContext.Set<T>().Where(P => P.Id == 1).Include(P => P.Brand).Include(P => P.Category)
+            // query = _dbContext.Set<T>().Where(P => P.Id == 1).Include(P => P.Brand).Include(P => P.Category).Skip(10).Take(5)
             return query;
         }
     }
