@@ -15,5 +15,7 @@ namespace Talabat.Core.Repositories.Contract
 
         public Task<T?> GetByIdWithSpecAsync(ISpecifications<T> spec);
         public Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifications<T> spec);
+
+		public Task<int> GetCountAsync(ISpecifications<T> spec);
     }
 }
