@@ -8,9 +8,9 @@ namespace Talabat.Core.Entities
 {
     public class CustomerBasket
     {
-        public CustomerBasket(string basketId)
+        public CustomerBasket(string id)
         {
-            Id = basketId;
+            Id = id;
         }
 
         public string Id { get; set; }

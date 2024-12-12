@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Extensions;
 using Talabat.APIs.Helpers;
 using Talabat.APIs.Middlewares;
+using Talabat.Core.Entities.Identitiy;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
@@ -36,26 +39,6 @@ namespace Talabat.APIs
 				Options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
 			});
 
-			builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-			builder.Services.AddAutoMapper(typeof(MappingProfiles));
-
-			builder.Services.Configure<ApiBehaviorOptions>(options =>
-			{
-				options.InvalidModelStateResponseFactory = (actionContext) =>
-				{
-					var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count() > 0)
-														 .SelectMany(P => P.Value.Errors)
-														 .Select(P => P.ErrorMessage)
-														 .ToList();
-
-					var response = new ApiValidationErrorResponse()
-					{
-						Errors = errors
-					};
-					return new BadRequestObjectResult(response);
-				};
-			});
-
 			// Redis
 			builder.Services.AddSingleton<IConnectionMultiplexer>(Options =>
 			{
@@ -63,34 +46,40 @@ namespace Talabat.APIs
 
 				return ConnectionMultiplexer.Connect(Connection);
 			});
-			
 
 
-			#endregion
+			builder.Services.AddApplicationServices();
+            builder.Services.AddIdentityServices();
 
-			var app = builder.Build();
+            #endregion
 
+            var app = builder.Build();
+
+			#region Update - Database
 			using var scope = app.Services.CreateScope();
 
 			var services = scope.ServiceProvider;
 
-			var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR for creating object from DbContext Explicitly
-			var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>(); // ASK CLR for creating object from AppIdentityDbContext Explicitly
+			var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR for creating object from DbContext [Explicitly]
+			var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>(); // ASK CLR for creating object from AppIdentityDbContext [Explicitly]
 
-            var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
+			var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
 
 
 			try
 			{
 				await _dbContext.Database.MigrateAsync(); // Update-Database
 				await _identityDbContext.Database.MigrateAsync(); // Update-IdentityDatabase
+				var userManger = services.GetRequiredService<UserManager<AppUser>>();
+				await AppIdentityDbContextSeed.SeedAsync(userManger);
                 await StoreContextSeed.SeedAsync(_dbContext); // Seeding in Database
 			}
 			catch (Exception ex)
 			{
 				var logger = LoggerFactory.CreateLogger<Program>();
-				logger.LogError(ex,"Error occured during the migration of the Database");
-			}
+				logger.LogError(ex, "Error occured during the migration of the Database");
+			} 
+			#endregion
 
 			#region Configure Middlewares
 			// Custom Middleware
