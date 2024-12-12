@@ -7,6 +7,7 @@ using Talabat.APIs.Middlewares;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
+using Talabat.Repository.Identity;
 
 namespace Talabat.APIs
 {
@@ -30,6 +31,10 @@ namespace Talabat.APIs
 				options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
+			builder.Services.AddDbContext<AppIdentityDbContext>(Options =>
+			{
+				Options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+			});
 
 			builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 			builder.Services.AddAutoMapper(typeof(MappingProfiles));
@@ -70,14 +75,16 @@ namespace Talabat.APIs
 			var services = scope.ServiceProvider;
 
 			var _dbContext = services.GetRequiredService<StoreContext>(); // ASK CLR for creating object from DbContext Explicitly
+			var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>(); // ASK CLR for creating object from AppIdentityDbContext Explicitly
 
-			var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
 
 
 			try
 			{
 				await _dbContext.Database.MigrateAsync(); // Update-Database
-				await StoreContextSeed.SeedAsync(_dbContext); // Seeding in Database
+				await _identityDbContext.Database.MigrateAsync(); // Update-IdentityDatabase
+                await StoreContextSeed.SeedAsync(_dbContext); // Seeding in Database
 			}
 			catch (Exception ex)
 			{
