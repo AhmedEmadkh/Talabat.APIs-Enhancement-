@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.DTOs.Products;
@@ -30,6 +32,7 @@ namespace Talabat.APIs.Controllers
            _categoryRepo = categoryRepo;
             _mapper = mapper;
         }
+		[Authorize]
 		[HttpGet] // GET: /api/Products
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDTO>>> GetAllProducts([FromQuery]ProductSpecParams specParams)
 		{
