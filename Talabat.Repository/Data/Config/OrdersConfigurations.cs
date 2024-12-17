@@ -21,6 +21,10 @@ namespace Talabat.Repository.Data.Config
                 );
             builder.Property(Order => Order.Subtotal)
                 .HasColumnType("decimal(18,2)");
+
+            builder.HasOne(Order => Order.DeliveryMethod)
+                .WithMany()
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
