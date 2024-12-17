@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.Order_Aggregate;
 
 namespace Talabat.Repository.Data
 {
@@ -13,7 +14,7 @@ namespace Talabat.Repository.Data
 		public static async Task SeedAsync(StoreContext _dbContext)
 		{
 			#region Seeding Brands
-			if (_dbContext.ProductBrands.Count() == 0)
+			if (!_dbContext.ProductBrands.Any())
 			{
 				var brandsData = File.ReadAllText("../Talabat.Repository/Data/DataSeed/brands.json");
 				var brands = JsonSerializer.Deserialize<List<ProductBrand>>(brandsData);
@@ -29,7 +30,7 @@ namespace Talabat.Repository.Data
 			}
 			#endregion
 			#region Seeding Categories
-			if (_dbContext.ProductCategories.Count() == 0)
+			if (!_dbContext.ProductCategories.Any())
 			{
 				var categoryData = File.ReadAllText("../Talabat.Repository/Data/DataSeed/types.json");
 				var categories = JsonSerializer.Deserialize<List<ProductCategory>>(categoryData);
@@ -45,7 +46,7 @@ namespace Talabat.Repository.Data
 			}
 			#endregion
 			#region Seeding Products
-			if (_dbContext.Products.Count() == 0)
+			if (!_dbContext.Products.Any())
 			{
 
 				var productData = File.ReadAllText("../Talabat.Repository/Data/DataSeed/products.json");
@@ -59,7 +60,22 @@ namespace Talabat.Repository.Data
 					}
 					await _dbContext.SaveChangesAsync();
 				}
-			} 
+			}
+            #endregion
+            #region Seeding Delivery Methods
+            if (!_dbContext.DeliveryMethod.Any())
+			{
+				var deliveryMethodsData = File.ReadAllText("../Talabat.Repository/Data/DataSeed/delivery.json");
+				var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryMethodsData);
+				if(deliveryMethodsData?.Count() > 0)
+				{
+					foreach(var deliveryMethod in deliveryMethods)
+					{
+						await _dbContext.Set<DeliveryMethod>().AddAsync(deliveryMethod);
+					}
+					await _dbContext.SaveChangesAsync();
+				}
+            }
 			#endregion
 		}
 	}
