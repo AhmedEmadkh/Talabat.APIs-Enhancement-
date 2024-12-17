@@ -11,8 +11,8 @@ namespace Talabat.Core.Entities.Order_Aggregate
     {
         [EnumMember(Value ="Pending")]
         Pending,
-        [EnumMember(Value = "Payment Succeded")]
-        PaymentSucceded,
+        [EnumMember(Value = "Payment Received")]
+        PaymentReceived,
         [EnumMember(Value = "Payment Failed")]
         PaymentFailed
     }

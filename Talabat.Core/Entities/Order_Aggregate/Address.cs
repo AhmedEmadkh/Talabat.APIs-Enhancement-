@@ -8,6 +8,19 @@ namespace Talabat.Core.Entities.Order_Aggregate
 {
     public class Address
     {
+        public Address()
+        {
+            
+        }
+        public Address(string firstName, string name, string street, string city, string country)
+        {
+            FirstName = firstName;
+            Name = name;
+            Street = street;
+            City = city;
+            Country = country;
+        }
+
         public string FirstName { get; set; }
         public string Name { get; set; }
         public string Street { get; set; }
