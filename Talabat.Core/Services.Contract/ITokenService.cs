@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities.Identitiy;
 
-namespace Talabat.Core.Services
+namespace Talabat.Core.Services.Contract
 {
     public interface ITokenService
     {
-        Task<string> CreateTokenAsync(AppUser user,UserManager<AppUser> userManager);
+        Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager);
     }
 }

@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities.Identitiy;
-using Talabat.Core.Services;
+using Talabat.Core.Services.Contract;
 
 namespace Talabat.Services
 {

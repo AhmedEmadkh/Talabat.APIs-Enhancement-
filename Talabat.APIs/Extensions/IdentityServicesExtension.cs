@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Talabat.Core.Entities.Identitiy;
-using Talabat.Core.Services;
+using Talabat.Core.Services.Contract;
 using Talabat.Repository.Identity;
 using Talabat.Services;
 

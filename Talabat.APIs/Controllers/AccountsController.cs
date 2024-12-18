@@ -5,7 +5,7 @@ using System.Net;
 using Talabat.APIs.DTOs.Accounts;
 using Talabat.APIs.Errors;
 using Talabat.Core.Entities.Identitiy;
-using Talabat.Core.Services;
+using Talabat.Core.Services.Contract;
 
 namespace Talabat.APIs.Controllers
 {
