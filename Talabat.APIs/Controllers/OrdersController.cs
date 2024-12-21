@@ -8,12 +8,12 @@ using Talabat.Core.Services.Contract;
 
 namespace Talabat.APIs.Controllers
 {
-    public class OrderController : APIBaseController
+    public class OrdersController : APIBaseController
     {
         private readonly IOrderService _orderService;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IMapper mapper)
+        public OrdersController(IOrderService orderService, IMapper mapper)
         {
             _orderService = orderService;
             _mapper = mapper;
@@ -25,11 +25,19 @@ namespace Talabat.APIs.Controllers
         public async Task<ActionResult<Order>> CreateOrder(OrderDTO orderDto)
         {
             var address = _mapper.Map<Address>(orderDto.ShippingAddress);
-            var order = await _orderService.CreateOrderAsync(orderDto.BuyerEmail, orderDto.BasketId, orderDto.DeliveryMethod, address);
+            var order = await _orderService.CreateOrderAsync(orderDto.BuyerEmail, orderDto.BasketId, orderDto.DeliveryMethodId, address);
 
             if (order is null)
                 return BadRequest(new ApiResponse(400));
             return Ok(order);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersForUser(string email)
+        {
+            var orders = await _orderService.GetOrdersForUserAsync(email);
+
+            return Ok(orders);
         }
     }
 }

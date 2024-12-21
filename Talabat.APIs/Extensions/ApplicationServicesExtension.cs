@@ -3,7 +3,9 @@ using Talabat.APIs.Errors;
 using Talabat.APIs.Helpers;
 using Talabat.Core;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Services.Contract;
 using Talabat.Repository;
+using Talabat.Services;
 
 namespace Talabat.APIs.Extensions
 {
@@ -13,6 +15,7 @@ namespace Talabat.APIs.Extensions
         {
             Services.AddScoped(typeof(IBasketRepository),typeof(BasketRepository));
             Services.AddScoped(typeof(IUnitOfWork),typeof(UnitOfWork));
+            Services.AddScoped<IOrderService, OrderService>();
             //Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddAutoMapper(typeof(MappingProfiles));
 

@@ -10,7 +10,7 @@ namespace Talabat.APIs.DTOs.Orders
         public string BasketId { get; set; }
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Delivery Method Is Required")]
-        public int DeliveryMethod { get; set; }
+        public int DeliveryMethodId { get; set; }
         public AddressDTO ShippingAddress { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace Talabat.Repository
 
                 _repositories.Add(key, repository);
             }
-            return _repositories as IGenericRepository<TEntity>;
+            return _repositories[key] as IGenericRepository<TEntity>;
         }
         public Task<int> CompleteAsync()
             => _dbContext.SaveChangesAsync();
