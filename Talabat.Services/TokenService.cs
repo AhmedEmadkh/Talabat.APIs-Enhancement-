@@ -39,6 +39,7 @@ namespace Talabat.Services
                 AuthClaims.Add(new Claim(ClaimTypes.Role,Role));
             }
 
+            // Secret Key
             var AuthKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
 
             var Token = new JwtSecurityToken(
