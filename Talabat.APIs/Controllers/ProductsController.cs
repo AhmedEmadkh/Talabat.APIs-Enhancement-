@@ -37,7 +37,6 @@ namespace Talabat.APIs.Controllers
             ///        _categoryRepo = categoryRepo;
             _mapper = mapper;
         }
-		[Authorize]
 		[HttpGet] // GET: /api/Products
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDTO>>> GetAllProducts([FromQuery]ProductSpecParams specParams)
 		{

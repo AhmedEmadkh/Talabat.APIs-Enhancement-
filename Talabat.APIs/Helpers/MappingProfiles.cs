@@ -3,7 +3,7 @@ using Talabat.APIs.DTOs.Orders;
 using Talabat.APIs.DTOs.Products;
 using Talabat.Core.Entities;
 using Talabat.Core.Entities.Order_Aggregate;
-
+using UserAddress = Talabat.Core.Entities.Identitiy.Address;
 namespace Talabat.APIs.Helpers
 {
     public class MappingProfiles : Profile
@@ -16,6 +16,8 @@ namespace Talabat.APIs.Helpers
                 .ForMember(d => d.PictureUrl, O => O.MapFrom<ProductPictureURLResolver>());
 
             CreateMap<AddressDTO, Address>();
+
+            CreateMap<UserAddress, AddressDTO>();
 
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethodName, O => O.MapFrom(s => s.DeliveryMethod.ShortName))

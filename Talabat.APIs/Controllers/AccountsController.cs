@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using Talabat.APIs.DTOs.Accounts;
+using Talabat.APIs.DTOs.Orders;
 using Talabat.APIs.Errors;
+using Talabat.APIs.Extensions;
 using Talabat.Core.Entities.Identitiy;
 using Talabat.Core.Services.Contract;
 
@@ -14,12 +19,18 @@ namespace Talabat.APIs.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountsController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        public AccountsController(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            ITokenService tokenService,
+            IMapper mapper
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _mapper = mapper;
         }
         // Register
         [HttpPost("Register")]
@@ -68,6 +79,32 @@ namespace Talabat.APIs.Controllers
                 Token = await _tokenService.CreateTokenAsync(User, _userManager)
             };
             return Ok(ReturnedUser);
+        }
+
+        [Authorize]
+        [HttpGet("getCurrentUser")]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            return Ok(new UserDTO()
+            {
+                DisplayName = user.DisplayName,
+                Email = email,
+                Token = await _tokenService.CreateTokenAsync(user, _userManager)
+            });
+        }
+
+        [Authorize]
+        [HttpGet("address")]
+        public async Task<ActionResult<AddressDTO>> GetUserAddress()
+        {
+            var user = await _userManager.FindAddressOfCurrentUser(User);
+
+            var MappedAddress = _mapper.Map<AddressDTO>(user.Address);
+            return MappedAddress;
         }
     }
 }

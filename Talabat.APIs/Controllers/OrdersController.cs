@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Talabat.APIs.DTOs.Orders;
 using Talabat.APIs.Errors;
 using Talabat.Core.Entities.Order_Aggregate;
@@ -8,6 +10,7 @@ using Talabat.Core.Services.Contract;
 
 namespace Talabat.APIs.Controllers
 {
+    [Authorize]
     public class OrdersController : APIBaseController
     {
         private readonly IOrderService _orderService;
@@ -25,7 +28,8 @@ namespace Talabat.APIs.Controllers
         public async Task<ActionResult<OrderToReturnDTO>> CreateOrder(OrderDTO orderDto)
         {
             var address = _mapper.Map<Address>(orderDto.ShippingAddress);
-            var order = await _orderService.CreateOrderAsync(orderDto.BuyerEmail, orderDto.BasketId, orderDto.DeliveryMethodId, address);
+            var buyerEmail = User.FindFirstValue(ClaimTypes.Email);
+            var order = await _orderService.CreateOrderAsync(buyerEmail, orderDto.BasketId, orderDto.DeliveryMethodId, address);
 
             if (order is null)
                 return BadRequest(new ApiResponse(400));
@@ -35,9 +39,10 @@ namespace Talabat.APIs.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<OrderToReturnDTO>>> GetOrdersForUser(string email)
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDTO>>> GetOrdersForUser()
         {
-            var orders = await _orderService.GetOrdersForUserAsync(email);
+            var buyerEmail = User.FindFirstValue(ClaimTypes.Email);
+            var orders = await _orderService.GetOrdersForUserAsync(buyerEmail);
 
             var OrdersToReurn = _mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDTO>>(orders);
             return Ok(OrdersToReurn);
@@ -46,10 +51,10 @@ namespace Talabat.APIs.Controllers
         [ProducesResponseType(typeof(OrderToReturnDTO),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrderByIdForUser(int id,string email)
+        public async Task<ActionResult<Order>> GetOrderByIdForUser(int id)
         {
-            var order = await _orderService.GetOrderByIdForUserAsync(id,email);
-
+            var buyerEmail = User.FindFirstValue(ClaimTypes.Email);
+            var order = await _orderService.GetOrderByIdForUserAsync(id, buyerEmail);
             if(order is null)
                 return NotFound(new ApiResponse(404));
             var OrderToReturn = _mapper.Map<Order, OrderToReturnDTO>(order);

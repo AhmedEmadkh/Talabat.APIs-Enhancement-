@@ -30,6 +30,7 @@ namespace Talabat.APIs.Extensions
                              ValidateAudience = true,
                              ValidAudience = configuration["JWT:ValidAudience"],
                              ValidateLifetime = true,
+                             ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:ExpirationInDays"])),
                              ValidateIssuerSigningKey = true,
                              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
                          };
