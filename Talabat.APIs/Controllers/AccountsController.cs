@@ -82,7 +82,7 @@ namespace Talabat.APIs.Controllers
         }
 
         [Authorize]
-        [HttpGet("getCurrentUser")]
+        [HttpGet]
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
@@ -105,6 +105,25 @@ namespace Talabat.APIs.Controllers
 
             var MappedAddress = _mapper.Map<AddressDTO>(user.Address);
             return MappedAddress;
+        }
+
+        [Authorize]
+        [HttpPut("address")]
+        public async Task<ActionResult<AddressDTO>> UpdateUserAddress(AddressDTO udpatedAddress)
+        {
+            var address = _mapper.Map<Address>(udpatedAddress);
+
+            var user = await _userManager.FindAddressOfCurrentUser(User);
+
+            address.Id = user.Address.Id;
+            user.Address = address;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if(!result.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest));
+
+            return Ok(udpatedAddress);
         }
     }
 }
