@@ -99,5 +99,14 @@ namespace Talabat.Services
 
             return order;
         }
+
+        public Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+        {
+            var deliveryMethodRepo = _unitOfWork.Repository<DeliveryMethod>();
+
+            var deliveryMethod = deliveryMethodRepo.GetAllAsync();
+
+            return deliveryMethod;
+        }
     }
 }
