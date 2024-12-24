@@ -9,13 +9,24 @@ namespace Talabat.Core.Specifications.Orders_Spec
 {
     public class OrderSpecifications : BaseSpecifications<Order>
     {
+        // Constructor for getting all orders
         public OrderSpecifications(string buyerEmail)
-            :base(O => O.BuyerEmail == buyerEmail)
+            : base(O => O.BuyerEmail == buyerEmail)
         {
             Includes.Add(O => O.DeliveryMethod);
             Includes.Add(O => O.Items);
 
             AddOrderByDesc(O => O.OrderDate);
+        }
+
+        // Constructor for getting specific order
+        public OrderSpecifications(int orderId, string buyerEmail)
+            : base(O => O.Id == orderId && O.BuyerEmail == buyerEmail)
+        {
+            {
+                Includes.Add(O => O.DeliveryMethod);
+                Includes.Add(O => O.Items);
+            }
         }
     }
 }

@@ -19,25 +19,41 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderToReturnDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost] 
-        public async Task<ActionResult<Order>> CreateOrder(OrderDTO orderDto)
+        public async Task<ActionResult<OrderToReturnDTO>> CreateOrder(OrderDTO orderDto)
         {
             var address = _mapper.Map<Address>(orderDto.ShippingAddress);
             var order = await _orderService.CreateOrderAsync(orderDto.BuyerEmail, orderDto.BasketId, orderDto.DeliveryMethodId, address);
 
             if (order is null)
                 return BadRequest(new ApiResponse(400));
-            return Ok(order);
+
+            var orderToReurn = _mapper.Map<Order, OrderToReturnDTO>(order);
+            return Ok(orderToReurn);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersForUser(string email)
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDTO>>> GetOrdersForUser(string email)
         {
             var orders = await _orderService.GetOrdersForUserAsync(email);
 
-            return Ok(orders);
+            var OrdersToReurn = _mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDTO>>(orders);
+            return Ok(OrdersToReurn);
+        }
+
+        [ProducesResponseType(typeof(OrderToReturnDTO),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Order>> GetOrderByIdForUser(int id,string email)
+        {
+            var order = await _orderService.GetOrderByIdForUserAsync(id,email);
+
+            if(order is null)
+                return NotFound(new ApiResponse(404));
+            var OrderToReturn = _mapper.Map<Order, OrderToReturnDTO>(order);
+            return Ok(OrderToReturn);
         }
     }
 }
